@@ -1,0 +1,15 @@
+
+*** Download requirements
+
+{{{
+$ mkdir prestashopconnect_deps
+$ cd prestashopconnect_deps
+}}}
+
+{{{
+$ git clone git@github.com:OCA/connector.git
+$ bzr branch lp:openerp-connector-ecommerce -r 349 
+$ bzr branch lp:openerp-product-attributes -r 243
+$ bzr branch lp:openerp-product-variant -r 194 
+$ bzr branch lp:sale-wkfl -r 45
+}}}
