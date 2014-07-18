@@ -134,11 +134,11 @@ class PrestashopImportSynchronizer(ImportSynchronizer):
         self._import_dependencies()
 
         erp_id = self._get_openerp_id()
-        self.mapper.convert(self.prestashop_record)
+        self.mapper.map_record(self.prestashop_record)
         if erp_id:
-            record = self.mapper.data
+            record = self.mapper.map_record(self.prestashop_record)
         else:
-            record = self.mapper.data_for_create
+            record = self.mapper.map_record(self.prestashop_record)
 
         # special check on data before import
         self._validate_data(record)
