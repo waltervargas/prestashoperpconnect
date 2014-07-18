@@ -20,10 +20,10 @@
 #
 ##############################################################################
 
-from openerp.osv import orm
+from openerp.osv import orm, fields
 from openerp.addons.connector.connector import Environment
 from openerp.addons.connector.checkpoint import checkpoint
-
+from openerp.addons.connector.connector import install_in_connector
 
 def add_checkpoint(session, model_name, record_id, backend_id):
     """ Add a row in the model ``connector.checkpoint`` for a record,
@@ -48,3 +48,44 @@ def get_environment(session, model_name, backend_id):
                                   backend_id,
                                   session.context)
     return Environment(backend_record, session, model_name)
+
+
+class prestashop_binding(orm.AbstractModel):
+    _name = 'prestashop.binding'
+    _inherit = 'external.binding'
+    _description = 'PrestaShop Binding (abstract)'
+
+    _columns = {
+        # 'openerp_id': openerp-side id must be declared in concrete model
+        'backend_id': fields.many2one(
+            'prestashop.backend',
+            'PrestaShop Backend',
+            required=True,
+            ondelete='restrict'),
+        # TODO : do I keep the char like in Magento, or do I put a PrestaShop ?
+        'prestashop_id': fields.integer('ID on PrestaShop'),
+    }
+
+    # the _sql_contraints cannot be there due to this bug:
+    # https://bugs.launchpad.net/openobject-server/+bug/1151703
+
+    def resync(self, cr, uid, ids, context=None):
+        if not hasattr(ids, '__iter__'):
+            ids = [ids]
+        session = ConnectorSession(cr, uid, context=context)
+        func = import_record
+        if context and context.get('connector_delay'):
+            func = import_record.delay
+        for product in self.browse(cr, uid, ids, context=context):
+            func(
+                session,
+                self._name,
+                product.backend_id.id,
+                product.prestashop_id
+            )
+        return True
+
+
+
+
+install_in_connector()
