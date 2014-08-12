@@ -42,6 +42,7 @@ from openerp.addons.connector.connector import Binder
 from prestapyt import PrestaShopWebServiceError
 from ..connector import add_checkpoint
 
+import pdb
 
 _logger = logging.getLogger(__name__)
 
@@ -88,13 +89,16 @@ class PrestashopImportSynchronizer(ImportSynchronizer):
         return dict(self.session.context, connector_no_export=True, **kwargs)
 
     def _create(self, data, context=None):
+
+        vals = data.values()
+        
         """ Create the ERP record """
         if context is None:
             context = self._context()
         erp_id = self.model.create(
             self.session.cr,
             self.session.uid,
-            data,
+            vals,
             context=context
         )
         _logger.debug('%s %d created from prestashop %s',
@@ -105,10 +109,13 @@ class PrestashopImportSynchronizer(ImportSynchronizer):
         """ Update an ERP record """
         if context is None:
             context = self._context()
+
+        vals = data.values()
+        
         self.model.write(self.session.cr,
                          self.session.uid,
                          erp_id,
-                         data,
+                         vals,
                          context=context)
         _logger.debug('%s %d updated from prestashop %s',
                       self.model._name, erp_id, self.prestashop_id)
@@ -123,6 +130,8 @@ class PrestashopImportSynchronizer(ImportSynchronizer):
 
         :param prestashop_id: identifier of the record on Prestashop
         """
+#        pdb.set_trace()
+        
         self.prestashop_id = prestashop_id
         self.prestashop_record = self._get_prestashop_data()
 
@@ -134,11 +143,13 @@ class PrestashopImportSynchronizer(ImportSynchronizer):
         self._import_dependencies()
 
         erp_id = self._get_openerp_id()
-        self.mapper.map_record(self.prestashop_record)
-        if erp_id:
-            record = self.mapper.map_record(self.prestashop_record)
-        else:
-            record = self.mapper.map_record(self.prestashop_record)
+
+        record = self.mapper.map_record(self.prestashop_record)
+
+        #if erp_id:
+        #    record = self.mapper.map_record(self.prestashop_record)
+        #else:
+        #    record = self.mapper.map_record(self.prestashop_record)
 
         # special check on data before import
         self._validate_data(record)
