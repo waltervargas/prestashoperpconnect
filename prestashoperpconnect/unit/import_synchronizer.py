@@ -680,16 +680,13 @@ class TranslatableRecordImport(PrestashopImportSynchronizer):
         self._after_import(erp_id)
 
     def _run_record(self, prestashop_record, lang_code, erp_id=None):
-        self.mapper.convert(prestashop_record)
+
 
         if erp_id is None:
             erp_id = self._get_openerp_id()
 
-        if erp_id:
-            record = self.mapper.data
-        else:
-            record = self.mapper.data_for_create
-
+        record = self.mapper.map_record(prestashop_record)
+        
         # special check on data before import
         self._validate_data(record)
 
