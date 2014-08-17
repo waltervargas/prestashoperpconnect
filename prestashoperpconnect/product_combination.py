@@ -38,6 +38,8 @@ except ImportError, e:
     from xml.etree import ElementTree
 
 
+import random
+
 @prestashop
 class ProductCombinationAdapter(GenericAdapter):
     _model_name = 'prestashop.product.combination'
@@ -397,7 +399,9 @@ class ProductCombinationOptionMapper(PrestashopImportMapper):
                 name = languages[0]['value']
         else:
             name = record['name']
-        field_name = 'x_' + unidecode(name.replace(' ', ''))
+
+
+        field_name = 'x_' + str(random.randrange(100,300)) + str(unidecode(name.replace(' ', '')))
         return {'name': field_name, 'field_description': name}
 
 
