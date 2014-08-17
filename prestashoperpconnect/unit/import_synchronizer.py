@@ -318,7 +318,7 @@ class ResPartnerRecordImport(PrestashopImportSynchronizer):
                 self.prestashop_record['firstname'], 
                 self.prestashop_record['lastname']
             )
-        self.create_account(self.prestashop_record['id'], name)
+#        self.create_account(self.prestashop_record['id'], name)
 
     def _after_import(self, erp_id):
         binder = self.get_binder_for_model(self._model_name)
